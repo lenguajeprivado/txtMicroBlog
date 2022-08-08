@@ -91,6 +91,15 @@ echo -e "\e[95mBye!\e[0m"
 exit
 }
 
+
+function QUIT2(){
+echo "Hasta-la-vista."
+echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
+echo -e "\e[95mBye!\e[0m"
+exit
+}
+
+
 function MAL(){
 echo "..."
 echo "Dije 'sí' o 'no'. Esa no es una respuesta válida."
@@ -207,10 +216,18 @@ case $sn in
 [sS] )
 if [ ! -f "$tb" ]; then
    echo -e "\e[41mPRECAUCIÓN\e[0m: $tb no existe. Revisa que el nombre esté bien escrito (con la extensión '.txt') y el archivo exista."
+   QUIT2
    exit
 fi
 if [ -d "$tb" ]; then
    echo -e "\e[41mPRECAUCIÓN\e[0m: $tb es un directorio, no un archivo. Ponte vergas."
+   QUIT2
+   exit
+fi
+tipo=$(file -i $tb | cut -d' ' -f2)
+if [ $tipo != "text/plain;" ]; then
+   echo -e "\e[41mPRECAUCIÓN\e[0m: $tb No es un archivo de texto, zoquete!"
+   QUIT2
    exit
 fi
 
