@@ -20,25 +20,27 @@ Una vez que hayas revisado el script **porque es importante revisar siempre los 
 
     chmod +x txtmb.sh
 
-TXTMB tiene dos unos pricipales. El primero es crear un archivo .txt con una cabecera adecuada. Para ello, se usa la flag *N* con el nombre del nuevo proyecto:
+TXTMB tiene dos usos pricipales. El primero es crear un archivo .txt con una cabecera adecuada. Para ello, se usa la flag *N* con el nombre del nuevo proyecto:
 
     ./txtmb.sh -N nuevotxtmb
 
 y sigue las instrucciones.
 
-Para crear nuevas entradas, se utiliza la flag *p*, acompañada del nombre y extensión del proyecto.
+El segundo uso es crear entradas o  *posts* (como si fuera un blog). Para crear nuevas entradas, se utiliza la flag *p*, acompañada del nombre y extensión del proyecto.
 
     ./txtmb.sh -p nuevotxtmb.txt
 
-es importante que no olvides la extensión *.txt*. Sigue las instrucciones en la terminal para crear una nueva entrada.
+es importante que no olvides la extensión *.txt* (y que, en verdad, sea un .txt). Sigue las instrucciones en la terminal para crear una nueva entrada.
 
 ## Cuestiones importantes
 
-Si llegas a modificar la cabecera del txt, cambia la variable "T_AJUSTE" para indicar dónde es que las nuevas entradas deben colocarse.
+¿Necesitas borrar una entrada?, ¿quieres cambiar la cabecera? Simplemente edita tu .txt en tu editor de textos favorito. Solo cuida que la línea indicada en "T_AJUSTE" esté bien colocada. Ese número indica en qué línea es que las nuevas entradas se van a colocar.
 
-También puede cambiar el comando que está dentro de la función ACCION. Es útil poner scp para enviarlo a un servidor donde pueda estar disponible.
+También puede cambiar el comando que está dentro de la función ACCION. Es útil poner scp para enviarlo a un servidor donde pueda estar disponible. También para copiar tu TXTMB a alguna carpeta (por ejemplo, del servidor) de manera automática.
 
 Ten en cuenta que es un script que hice en una sola tarde libre. No esperes que sea perfecto, que funcione bien o que esté bien escrito.
+
+Tal vez luego implemente que haga *pull* de la última versión desde el servidor con *wget* o *curl*. Pero eso será luego.
 
 ## Demo
 
