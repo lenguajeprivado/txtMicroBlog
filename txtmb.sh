@@ -69,7 +69,7 @@ LINEA_INICIO=18
 # Modifica con la variable $tb para el nombre de tu TXTMB actual.
 function ACCION(){
 #### Cambia esto
-#scp $tb daniel@servidor:/dir/servidor/$tb
+#scp $tb daniel@servidor:/dir/servidor/txtmb.txt
 echo "No hay acción predeterminada"
 ####
 return
@@ -222,7 +222,7 @@ read -p "¿Quieres crear una copia de respaldo antes de continuar? (s/n):  " res
 case $resp in
         [sS] )
             echo " "
-            respaldo="$RANDOM-$(date +%F)-bak-$tb"
+            respaldo="$tb-$RANDOM-$(date +%F).bak"
             cat $tb > $respaldo
             echo -e "\e[92mCopia de respaldo creada en:\e[0m '$respaldo'."
             ;;
