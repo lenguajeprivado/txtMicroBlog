@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TXTMB: txtMicroBlog 
-# Ver 0.1
+# Ver 0.3
 # Daniel M. Olivera
 # https://lenguajeprivado.com
 #
@@ -16,14 +16,14 @@
 
 #Cabecera
 
-# Título del txtmicroblog. Aparece después del banner de inicio. 
-TITULO="EL TÍTULO DE TU TXTMB"
+# Título del TXTMB. Aparece después del banner de inicio. 
+TITULO="TÍTULO DEL TXTMB"
 
 # Nombre del autor como aparece en la cabecera después de "Autor: "
-AUTOR="TU NOMBRE"
+AUTOR="AUTOR DEL TXTMB"
 
-# Descripción del microblog
-DESCRIPCION="DE QUÉ TRATA"
+# Descripción del TXTMB
+DESCRIPCION="DESCRIPCIÓN DEL TXTMB"
 
 # Un par de datos que el autor quiera agregar a la cabecera.
 # En caso de no usarlos, lo mejor es dejar un espacio en blanco
@@ -51,28 +51,31 @@ FECHA="+[%H:%M] -> %a %d de %B de %Y."
 
 # Delimitador de entradas. La línea que aparece al final de cada
 #entrada para marcar que ha finalizado
-DELIMITADOR="-------------"
+DELIMITADOR="---------------"
 
 
 # OTRAS CONFIGURACIONES
 
-# La alerta de caracteres indica el tamaño máximo de las entradas. Si las entradas que escribas son más largas que este número, se mostrará una alerta que te permitirá continuar (aunque sea más larga de lo usual) o salvar el texto y salir.
+# La alerta de caracteres indica el tamaño máximo de las entradas. 
+# Si las entradas que escribas son más largas que este número, se 
+# mostrará una alerta que te permitirá continuar (aunque sea más 
+# larga de lo usual) o salvar el texto y salir.
 ALERTA_CARACTERES=300
 
 # Ajuste de línea. Indíca dónde es que se deben de cortar las líneas demasiado largas en el txMicroBlog. Las líneas siempre se cortan en los espacios, por lo que no quedará ninguna palabra "mutilada". Los valores muy cortos pueden echar a perder la cabecera o las entradas.
 T_AJUSTE=70
 
 # Indica el NÚMERO DE LÍNEA del archivo en la cual se agregarán las nuevas entradas que se escriban. Si se modifica la cabecera del archivo, es importante modificar este valor para indicar dónde iniciará de nuevo el feed.
-LINEA_INICIO=18
+LINEA_INICIO=15
 
 # Acción predeterminada. Al terminar de escribir tu entrada, el script te preguntará si quieres que realice una acción predterminada. Esto es útil para actualizar el blog y subirlo a un servidor por medio de scp o para copiarlo a alguna carpeta. Cambia el comando que sigue.
 # Modifica con la variable $tb para el nombre de tu TXTMB actual.
-function ACCION(){
+function accion(){
 #### Cambia esto
-#scp $tb daniel@servidor:/dir/servidor/txtmb.txt
-echo "No hay acción predeterminada"
+# Puedes poner, por ejemplo:
+# scp $txtmb daniel@6.6.6:/directorio/del/servidor/miblog.txt
+echo "No se ha ajustado una acción predeterminada."
 ####
-return
 }
 
 #####################################3
@@ -82,81 +85,59 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Funciones de salida
-function QUIT(){
-echo "..."
-echo "Bueno, pues. ¿Quién te entiende?"
-echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
-echo -e "\e[95mBye!\e[0m"
-exit
-}
-
-
-function QUIT2(){
-echo "Hasta-la-vista."
-echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
-echo -e "\e[95mBye!\e[0m"
-exit
-}
-
-
-function MAL(){
-echo "..."
-echo "Dije 'sí' o 'no'. Esa no es una respuesta válida."
-echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
-echo -e "\e[95mBye!\e[0m"
-exit
-}
-
 
 # La "ayuda" con las flags de uso.
 function USO() {
-clear
-echo " "
-echo -e "\e[46;1;37m[ TXTMB -- txtMicroBlog V. 0.1 ]\e[0m" 
 echo -e "\e[96mDaniel M. Olivera -- https://lenguajeprivado.com\e[0m" 
 cat <<USO
+  Descripción: Genera archivos de texto y entradas en los archivos de texto en orden cronológico. Puede ser usado como un microblog simple en formato .txt para subirlo en un servidor o para guardar notas rápidas en texto plano.
 
-    Descripción: Genera archivos de texto y entradas en los archivos de texto en orden cronológico. Puede ser usado como un microblog simple en formato .txt para subirlo en un servidor o para guardar notas rápidas en texto plano.
+  Uso:                
+    ./txtmb.sh [-X nombre]
+    ./txtmb.sh -n <archivo>.txt [-b] [-p "<nueva entrada>"] [-a] [-d]
+    ./txtmb.sh [-h]
 
-    Uso:                $0 [-N nombre] [-p texto.txt] [-h ]
+  Opciones:
+    -X nombre    : Genera un nuevo .txt para ser preconfigurado como TXTMB.
 
-    Opciones:
-    
-        -N nombre    :  Genera un nuevo txt para ser preconfigurado como txtMicroBlog.
-        -p texto.txt :  Agrega una nueva entrada al txtMicroBlog preexistene. 
-                        Cuidado con conservar la extensión ".txt".
-        -h           :  Muestra este mensaje
+    -n <.txt>    : Llama al archivo de texto plano TXTMB para trabajar en él. 
+    -p "<post>"  : El texto de la nueva entrada que se escribirá en el TXTMB.
+    -b           : Crea una copia de respaldo (.bak).
+    -a           : Ajuste de línea en el TXTMB.
+    -d           : Llama a la acción posterior (previamente fijada).
+    -h           : Muestra este mensaje
 
+  Ejemplos:
 
+    ./txtmb.sh -X prueba
+    > Crea un nuevo TXTMB llamado "prueba.txt".
+
+    ./txtmb.sh -n prueba.txt -p "Esta es una nueva entrada"
+    > Crea una nueva entrada en el TXTMB llamado "prueba.txt"
+
+    ./txtmb.sh -n prueba.txt -b -p "Esta es una nueva entrada"
+    > Crea una copia de respaldo y una nueva entrada en el TXTMB llamado "prueba.txt"
+
+    ./txtmb.sh -n prueba.txt -b -p "Esta es una nueva entrada" -a
+    > Crea una copia de respaldo, una nueva entrada en el TXTMB llamado "prueba.txt" y ajusta la línea
+
+Las configuraciones posibles se encuentran al inicio del script.
+
+Bye!
 USO
     exit
 }
 
 
-# Esta es la función que crea un nuevo txtMicroBlog
-
 function nuevo(){
-clear
-echo " "
-echo -e "\e[46;1;37m[ TXTMB -- txtMicroBlog V. 0.1 ]\e[0m" 
-echo -e "\e[96mDaniel M. Olivera -- https://lenguajeprivado.com\e[0m" 
-echo " "
-echo -e "\e[1;92mCREACIÓN DE NUEVO txtMicroBlog\e[0m"   
-read -p "¿Quieres crear un nuevo txtblog llamado '$ntexto.txt'? (s/n): " sn
-case $sn in
-[sS] )
-if test -f "$ntexto.txt"; then
-   echo -e "\e[41mPRECAUCIÓN\e[0m: '$ntexto.txt' ya existe. Elimina este archivo antes de continuar."
-   echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
-   echo -e "\e[95mBye!\e[0m"
-   exit
-fi
+    if test -f "$ntexto.txt"; then
+        echo -e "\e[41mPRECAUCIÓN: '$ntexto.txt' ya existe. Elimina este archivo antes de continuar.\e[0m"
+        echo -e "\e[95mBye!\e[0m"
+        exit
+    fi
 
 cat << EOF > $ntexto.txt
 [TXTMB] 
-txtMicroBlog V. 0.1
-
      
 ❱  LENGUAJE PRIVADO
 
@@ -167,207 +148,122 @@ $DESCRIPCION
     $DATO1
     $DATO2
 
-Creado con txtMicroBlog:
+
+---------------
+
+
+---------------
+Creado con txtMicroBlog V. 0.3
 https://github.com/lenguajeprivado/txtMicroBlog
-###################
-
-
-
-
-☠
-
 EOF
-echo " "
-echo "================================="
-head -n 30 $ntexto.txt
-echo "================================="
-echo " "
-echo -e ">>    \e[42mEl nuevo txtMicroBlog llamado '$ntexto.txt' ha sido creado.\e[0m"
-echo " "
-echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
+echo -e "\e[1;32mEl nuevo txtMicroBlog llamado '$ntexto.txt' ha sido creado.\e[0m"
 echo -e "\e[95mBye!\e[0m"
-exit;;
-
-[nN] )
-QUIT
-exit;;
-
-*)
-echo -e "\e[35m¡¿Qué demonios es esa letra?!.\e[0m Escribe UNICAMENTE's' o 'n' (y nada más)."
-sleep 2
-nuevo
-exit 1;;
-esac
+exit
 }
 
+function check() {
+if [ ! -f "$txtmb" ]; then
+   echo -e "\e[41mPRECAUCIÓN\e[0m: '$txtmb' no existe!"
+   echo "Revisa que el nombre esté bien escrito (con la extensión '.txt') y el archivo exista."
+   echo -e "\e[95mBye!\e[0m"
+   exit
+fi
 
-# Esta es la función que crea los posts al inicio del feed.
-# Toda la magia la hace "sed".
-function post(){
-clear
-echo " "
-echo -e "\e[46;1;37m[ txtMicroBlog V. 0.1 ]\e[0m" 
-echo -e "\e[92mDaniel M. Olivera -- https://lenguajeprivado.com\e[0m" 
-echo " "
-echo -e "\e[1;92mCreación de nueva entrada en\e[0m: \e[45m'$tb'\e[0m."   
-echo " "
-read -p "¿Quieres escribir una nueva entrada en el txtblog llamado '$tb'? (s/n): " sn
-case $sn in
-[sS] )
-if [ ! -f "$tb" ]; then
-   echo -e "\e[41mPRECAUCIÓN\e[0m: $tb no existe. Revisa que el nombre esté bien escrito (con la extensión '.txt') y el archivo exista."
-   QUIT2
-   exit
-fi
-if [ -d "$tb" ]; then
-   echo -e "\e[41mPRECAUCIÓN\e[0m: $tb es un directorio, no un archivo. Ponte vergas."
-   QUIT2
-   exit
-fi
-tipo=$(file -i $tb | cut -d' ' -f2)
+tipo=$(file -i $txtmb | cut -d' ' -f2)
 if [ $tipo != "text/plain;" ]; then
-   echo -e "\e[41mPRECAUCIÓN\e[0m: $tb No es un archivo de texto, zoquete!"
-   QUIT2
+   echo -e "\e[41mPRECAUCIÓN\e[0m: '$txtmb' no es un archivo .txt!"
+   echo -e "\e[95mBye!\e[0m"
    exit
 fi
+}
 
-echo " "
-echo -e "\e[1;92mCopia de respaldo de\e[0m: \e[45m'$tb'\e[0m."
-echo "Te recomiendo, antes de hacer cualquier cambio, hacer una copia de resplado de tu archivo por si algo sale mal. Especialmente hazlo si planear usar la opción de 'Ajuste de línea' al terminar de escribir tu entrada."
-echo " "
-read -p "¿Quieres crear una copia de respaldo antes de continuar? (s/n):  " resp
-case $resp in
-        [sS] )
-            echo " "
-            respaldo="$tb-$RANDOM-$(date +%F).bak"
-            cat $tb > $respaldo
-            echo -e "\e[92mCopia de respaldo creada en:\e[0m '$respaldo'."
+function checkarchivo() {
+if [ -z ${txtmb+x} ]; then 
+   echo -e "\e[41mPRECAUCIÓN\e[0m: No se ha establecido el archivo TXTMB. Usa '-n nombrearchivo.txt'."
+   echo -e "\e[95mBye!\e[0m"
+   exit
+fi
+}
+
+function backup() {
+    checkarchivo
+    respaldo="$RANDOM-$(date +%F).bak"
+    cp $txtmb $respaldo
+    echo -e "\e[1;32mCopia de respaldo creada:\e[0m '$respaldo'."    
+}
+
+function checkpost() {
+    if [ ${#entrada} -gt $ALERTA_CARACTERES ];then
+        echo -e "\e[1;43mADVERTENCIA: \e[0m El texto muy largo. Contiene ${#entrada} caracteres. La alerta de caracteres está fijada para menos de $ALERTA_CARACTERES caracteres."
+        read -p "¿Deseas continuar? [s/n]: " continuar
+        case $continuar in
+        [sS])
+            echo "Ok!!!!"
             ;;
-        [nN] )
-            echo "ok!"
+        [nN])
+            sav="salvado-$RANDOM.txt"
+            echo $entrada > $sav
+            echo -e "\e[1;32mTexto salvado en el archivo '$sav' \e[0m."
+            echo -e "\e[95mBye!\e[0m"
+            exit
             ;;
         *)
-            MAL
+            echo -e "\e[1;41mOpción no válida.\e[0m"
+            checkpost
             ;;
-esac
-
-echo " "
-echo -e "\e[42mEscribe tu entrada: \e[0m"
-echo " " 
-read -p "txtmb> " texto
-
-if [ ${#texto} -gt 300 ];then
-    echo -e "\e[41mPRECAUCIÓN\e[0m:"
-    echo -e "\e[33mEl texto muy largo. Contiene ${#texto} caracteres. La alerta de caracteres está fijada para menos de $ALERTA_CARACTERES caracteres.\e[0m"
-    read -p "¿Deseas continuar a pesar de lo largo que es el texto? (s/n): " continuar
-    case $continuar in
-    [sS])
-        echo "ok!"
-        ;;
-    [nN])
-        sav="salvado$RANDOM"
-        echo $texto > $sav.txt
-        echo -e "    \e[105mTexto salvado en el archivo $sav.txt\e[0m" 
-        exit
-        ;;
-    *)
-        MAL
-        ;;
-    esac
-fi
-clear
-echo " "
-echo "========================"
-ahora=$(date "$FECHA")
-PIE="\n>  $NOMBRE@$TCORTO\n$ahora\n$DELIMITADOR\n\n"
-sed -i "$LINEA_INICIO a $texto $PIE" $tb
-head -n 30 $tb
-echo "========================"
-echo " "
-echo -e "\e[1;42mEntrada creada en $tb !\e[0m"
-echo " "
-echo " "
-echo -e "\e[1;92mAjuste de línea de\e[0m: \e[45m'$tb'\e[0m."
-echo "El ajuste de línea corta TODAS las entradas para que sean más legibles. Recorta las líneas largas colocándolas en una nueva línea. Esto puede afectar a todo el texto y romper tu txtMicroBlog. Hazlo solo si hiciste una copia de respaldo antes. Puedes cambiar el tamaño del ajuste de línea en las configuraciones."
-echo " "
-read -p "¿Quieres ajustar la línea de texto? (s/n):  " linea
-
-    case $linea in
-    [sS] )
-        fold -sw $T_AJUSTE $tb > temporal
-        mv temporal $tb
-        clear
-        echo " "
-        echo "==============================="
-        head -n 30 $tb
-        echo "==============================="
-        echo " "
-        echo -e "\e[1;42mAjuste de línea realizado en $tb !\e[0m"
-        ;;
-    [nN] )
-        echo "No: ok!"
-        ;;
-    *)
-        MAL
-        exit
-        ;;
-    esac
-
-echo " "
-echo " "
-echo -e "\e[1;92mAcción posterior para\e[0m: \e[45m'$tb'\e[0m."
-echo "Si está configurada, se pude realizar una acción (como subir al servidor el txt, con scp, por ejemplo)."
-read -p "¿Quiéres realizar la acción posterior preconfigurada? (s/n):  " accion
-    case $accion in
-    [sS] )
-        ACCION
-        echo -e "\e[1;42mAcción ejecutada.\e[0m"
-        echo "Sin embargo, verifica que se haya realizado correctamente."
-        echo " "
-        ;;
-    [nN] )
-        echo "No: ok!"
-        ;;
-    *)
-        MAL
-        exit
-        ;;
-    esac
-
-echo " "
-echo -e "\e[34m[Saliendo de txtMicroBlog]\e[0m"
-echo -e "\e[95mBye!\e[0m"
-sleep 1
-exit;;
-
-[nN] )
-QUIT
-exit;;
-
-*)
-echo -e "\e[35m¡¿Qué demonios es esa letra?!.\e[0m Escribe UNICAMENTE's' o 'n' (y nada más)."
-sleep 2
-post
-exit;;
-esac
+        esac
+    fi
 }
 
-# Asignación de las flags.
+function post() {
+    checkarchivo
+    checkpost
+    ahora=$(date "$FECHA")
+    PIE="\n>  $NOMBRE@$TCORTO\n$ahora\n$DELIMITADOR\n\n"
+    sed -i "$LINEA_INICIO a $entrada $PIE" $txtmb
+    echo -e "\e[1;32mEntrada creada en '$txtmb'.\e[0m"
+}
+
+function ajustelin() {
+    checkarchivo
+    fold -sw $T_AJUSTE $txtmb > temporal
+    mv temporal $txtmb
+    echo -e "\e[1;32mAjuste de línea realizado en '$txtmb'.\e[0m"
+}
+
+##################
 
 if [ $# -eq 0 ]; then
     USO
     exit 0
 fi
 
-while getopts ':N:p:h' OPTION; do
+echo -e "\e[1;96m[ TXTMB -- txtMicroBlog V. 0.3 ]\e[0m\n" 
+
+while getopts ':X:n:bp:adh' OPTION; do
   case "$OPTION" in
-    N)
+    X)
       ntexto=${OPTARG}
       nuevo
+      exit
+      ;;
+    n)
+      txtmb=${OPTARG}
+      check
+      ;;
+    b)
+      backup
       ;;
     p)
-      tb=${OPTARG}
+      entrada=${OPTARG}
       post
+      ;;
+    a)
+      ajustelin
+      ;;
+    d)
+      accion
+      echo -e "\e[1;32mAcción ejecutada.\e[0m Sin embargo, verifica que se haya realizado correctamente."
       ;;
     h)
       USO
@@ -378,9 +274,11 @@ while getopts ':N:p:h' OPTION; do
       exit 1
       ;;
     ?)
-      echo "script usage: $(basename \$0) [-l] [-h] [-a somevalue]" >&2
+      USO
       exit 1
       ;;
   esac
 done
 shift "$(($OPTIND -1))"
+exit
+
