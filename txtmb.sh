@@ -49,6 +49,9 @@ TCORTO="lenguajeprivado"
 # +[%H:%M] - %a %d de %B de %Y : [HH:MM] día DD de MM de AAAA
 FECHA="+[%H:%M] -> %a %d de %B de %Y."
 
+# Formato local de fecha
+LUGAR="es_MX.UTF-8"
+
 # Delimitador de entradas. La línea que aparece al final de cada
 #entrada para marcar que ha finalizado
 DELIMITADOR="---------------"
@@ -218,7 +221,7 @@ function checkpost() {
 function post() {
     checkarchivo
     checkpost
-    ahora=$(date "$FECHA")
+    ahora=$(LC_TIME="$LUGAR" date "$FECHA")
     PIE="\n>  $NOMBRE@$TCORTO\n$ahora\n$DELIMITADOR\n\n"
     sed -i "$LINEA_INICIO a $entrada $PIE" $txtmb
     echo -e "\e[1;32mEntrada creada en '$txtmb'.\e[0m"
